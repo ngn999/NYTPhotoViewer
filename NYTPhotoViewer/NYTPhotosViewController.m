@@ -49,6 +49,7 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
 @property (nonatomic) UITapGestureRecognizer *singleTapGestureRecognizer;
 
 @property (nonatomic) NYTPhotosOverlayView *overlayView;
+@property (nonatomic, strong) UIPageControl *pageControl;
 
 /// A custom notification center to scope internal notifications to this `NYTPhotosViewController` instance.
 @property (nonatomic) NSNotificationCenter *notificationCenter;
@@ -125,7 +126,13 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
     [self.view addSubview:self.pageViewController.view];
     [self.pageViewController didMoveToParentViewController:self];
     
-    [self addOverlayView];
+
+    self.pageControl.center = CGPointMake(self.view.center.x, self.view.bounds.size.height - 50);
+    [self.pageViewController.view addSubview:self.pageControl];
+    self.pageControl.numberOfPages = [self totalItemCount];
+    self.pageControl.hidden = !([self totalItemCount] > 1);
+    
+    // [self addOverlayView];
     
     self.transitionController.startingView = self.referenceViewForCurrentPhoto;
     
@@ -135,6 +142,15 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
     }
     
     self.transitionController.endingView = endingView;
+}
+
+-(UIPageControl *)pageControl {
+    if (!_pageControl) {
+        _pageControl = [[UIPageControl alloc] init];
+        _pageControl.frame = CGRectMake(0, 0, 200, 20);
+        _pageControl.userInteractionEnabled = NO;
+    }
+    return _pageControl;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -405,7 +421,8 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
 #pragma mark - Gesture Recognizers
 
 - (void)didSingleTapWithGestureRecognizer:(UITapGestureRecognizer *)tapGestureRecognizer {
-    [self setOverlayViewHidden:!self.overlayView.hidden animated:YES];
+    // [self setOverlayViewHidden:!self.overlayView.hidden animated:YES];
+    [self dismissViewControllerAnimated:YES userInitiated:YES completion:nil];
 }
 
 - (void)didPanWithGestureRecognizer:(UIPanGestureRecognizer *)panGestureRecognizer {
@@ -651,6 +668,7 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
         } else {
             [self didNavigateToPhoto:viewController.photo atIndex:viewController.photoViewItemIndex];
         }
+        self.pageControl.currentPage = viewController.photoViewItemIndex;
     }
 }
 
