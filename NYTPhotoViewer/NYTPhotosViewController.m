@@ -130,6 +130,7 @@ static const UIEdgeInsets NYTPhotosViewControllerCloseButtonImageInsets = {3, 0,
     self.pageControl.center = CGPointMake(self.view.center.x, self.view.bounds.size.height - 50);
     [self.pageViewController.view addSubview:self.pageControl];
     self.pageControl.numberOfPages = [self totalItemCount];
+    self.pageControl.currentPage = [self.dataSource indexOfPhoto:self.initialPhoto];
     self.pageControl.hidden = !([self totalItemCount] > 1);
     
     // [self addOverlayView];
