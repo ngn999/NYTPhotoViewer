@@ -12,11 +12,9 @@
 
 #ifdef ANIMATED_GIF_SUPPORT
 #if SWIFT_PACKAGE
-  #import "PINRemoteImage.h"
-  #import "PINAnimatedImageView.h"
+  #import "SDWebImage.h"
 #else
-  #import <PINRemoteImage/PINRemoteImage.h>
-  #import <PINRemoteImage/PINAnimatedImageView.h>
+  #import <SDWebImage/SDWebImage.h>
 #endif
 #endif
 
@@ -25,7 +23,7 @@
 - (instancetype)initWithCoder:(NSCoder *)aDecoder NS_DESIGNATED_INITIALIZER;
 
 #ifdef ANIMATED_GIF_SUPPORT
-@property (nonatomic) PINAnimatedImageView *imageView;
+@property (nonatomic) SDAnimatedImageView *imageView;
 #else
 @property (nonatomic) UIImageView *imageView;
 #endif
@@ -91,10 +89,10 @@
 #pragma mark - Setup
 
 - (void)setupInternalImageViewWithImage:(UIImage *)image imageData:(NSData *)imageData {
-    UIImage *imageToUse = image ?: [UIImage imageWithData:imageData];
+    UIImage *imageToUse = image ?: [SDAnimatedImage imageWithData:imageData];
 
 #ifdef ANIMATED_GIF_SUPPORT
-    self.imageView = [[PINAnimatedImageView alloc] initWithAnimatedImage:[[PINCachedAnimatedImage alloc] initWithAnimatedImageData:imageData]];
+    self.imageView = [[SDAnimatedImageView alloc] initWithImage:imageToUse];
 #else
     self.imageView = [[UIImageView alloc] initWithImage:imageToUse];
 #endif
@@ -120,16 +118,16 @@
 #endif // ANIMATED_GIF_SUPPORT
 #endif // DEBUG
 
-    UIImage *imageToUse = image ?: [UIImage imageWithData:imageData];
+    UIImage *imageToUse = image ?: [SDAnimatedImage imageWithData:imageData];
 
     // Remove any transform currently applied by the scroll view zooming.
     self.imageView.transform = CGAffineTransformIdentity;
     self.imageView.image = imageToUse;
     
-#ifdef ANIMATED_GIF_SUPPORT
-    // It's necessarry to first assign the UIImage so calulations for layout go right (see above)
-    self.imageView.animatedImage = [[PINCachedAnimatedImage alloc] initWithAnimatedImageData:imageData];
-#endif
+//#ifdef ANIMATED_GIF_SUPPORT
+//    // It's necessarry to first assign the UIImage so calulations for layout go right (see above)
+//    self.imageView.image = [[SDAnimatedImage alloc] initWithData:imageData];
+//#endif
     
     self.imageView.frame = CGRectMake(0, 0, imageToUse.size.width, imageToUse.size.height);
     
@@ -148,13 +146,8 @@
 }
 
 - (void)updateZoomScale {
-#ifdef ANIMATED_GIF_SUPPORT
-    if (self.imageView.animatedImage || self.imageView.image) {
-        CGSize imageSize = self.imageView.animatedImage ? self.imageView.animatedImage.size : self.imageView.image.size;
-#else
     if (self.imageView.image) {
         CGSize imageSize = self.imageView.image.size;
-#endif
         CGRect scrollViewFrame = self.bounds;
         
         CGFloat scaleWidth = scrollViewFrame.size.width / imageSize.width;

@@ -21,11 +21,9 @@
 
 #ifdef ANIMATED_GIF_SUPPORT
 #if SWIFT_PACKAGE
-  #import "PINRemoteImage.h"
-  #import "PINAnimatedImageView.h"
+  #import "SDWebImage.h"
 #else
-  #import <PINRemoteImage/PINRemoteImage.h>
-  #import <PINRemoteImage/PINAnimatedImageView.h>
+  #import <SDWebImage/SDWebImage.h>
 #endif
 #endif
 
